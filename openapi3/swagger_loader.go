@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -125,7 +126,7 @@ func readURL(location *url.URL) ([]byte, error) {
 	if location.Scheme != "" || location.Host != "" || location.RawQuery != "" {
 		return nil, fmt.Errorf("Unsupported URI: '%s'", location.String())
 	}
-	data, err := ioutil.ReadFile(location.Path)
+	data, err := ioutil.ReadFile(filepath.FromSlash(location.Path))
 	if err != nil {
 		panic(err)
 	}
