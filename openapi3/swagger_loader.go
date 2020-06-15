@@ -123,18 +123,15 @@ func (swaggerLoader *SwaggerLoader) LoadSwaggerFromFile(path string) (*Swagger, 
 
 func (swaggerLoader *SwaggerLoader) loadSwaggerFromFileInternal(path string) (*Swagger, error) {
 	f := swaggerLoader.LoadSwaggerFromURIFunc
+	pathAsURL := &url.URL{Path: path}
 	if f != nil {
-		return f(swaggerLoader, &url.URL{
-			Path: path,
-		})
+		return f(swaggerLoader, pathAsURL)
 	}
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return swaggerLoader.loadSwaggerFromDataWithPathInternal(data, &url.URL{
-		Path: path,
-	})
+	return swaggerLoader.loadSwaggerFromDataWithPathInternal(data, pathAsURL)
 }
 
 func (swaggerLoader *SwaggerLoader) LoadSwaggerFromData(data []byte) (*Swagger, error) {

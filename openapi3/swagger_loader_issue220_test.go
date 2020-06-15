@@ -15,6 +15,9 @@ func TestIssue220(t *testing.T) {
 	loader := NewSwaggerLoader()
 	loader.IsExternalRefsAllowed = true
 	doc, err := loader.LoadSwaggerFromFile(specPath)
+	if err != nil {
+		panic(err)
+	}
 	require.NoError(t, err)
 	err = doc.Validate(loader.Context)
 	require.NoError(t, err)
