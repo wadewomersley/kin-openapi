@@ -124,7 +124,7 @@ func readURL(location *url.URL) ([]byte, error) {
 		return data, nil
 	}
 	if location.Scheme != "" || location.Host != "" || location.RawQuery != "" {
-		return nil, fmt.Errorf("Unsupported URI: '%s'", location.String())
+		return nil, fmt.Errorf("unsupported URI: %q", location.String())
 	}
 	data, err := ioutil.ReadFile(filepath.FromSlash(location.Path))
 	if err != nil {
@@ -143,7 +143,7 @@ func (swaggerLoader *SwaggerLoader) LoadSwaggerFromFile(path string) (*Swagger, 
 
 func (swaggerLoader *SwaggerLoader) loadSwaggerFromFileInternal(path string) (*Swagger, error) {
 	f := swaggerLoader.LoadSwaggerFromURIFunc
-	pathAsURL := &url.URL{Path: path}
+	pathAsURL := &url.URL{Path: filepath.FromSlash(path)}
 	if f != nil {
 		x, err := f(swaggerLoader, pathAsURL)
 		if err != nil {
