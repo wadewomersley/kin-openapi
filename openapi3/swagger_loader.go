@@ -52,7 +52,11 @@ func (swaggerLoader *SwaggerLoader) LoadSwaggerFromURI(location *url.URL) (*Swag
 func (swaggerLoader *SwaggerLoader) loadSwaggerFromURIInternal(location *url.URL) (*Swagger, error) {
 	f := swaggerLoader.LoadSwaggerFromURIFunc
 	if f != nil {
-		return f(swaggerLoader, location)
+		x, err := f(swaggerLoader, location)
+		if err != nil {
+			panic(err)
+		}
+		return x, err
 	}
 	data, err := readURL(location)
 	if err != nil {
@@ -70,6 +74,9 @@ func (swaggerLoader *SwaggerLoader) loadSingleElementFromURI(ref string, rootPat
 
 	parsedURL, err := url.Parse(ref)
 	if err != nil {
+		if err != nil {
+			panic(err)
+		}
 		return err
 	}
 
@@ -87,6 +94,9 @@ func (swaggerLoader *SwaggerLoader) loadSingleElementFromURI(ref string, rootPat
 		return err
 	}
 	if err := yaml.Unmarshal(data, element); err != nil {
+		if err != nil {
+			panic(err)
+		}
 		return err
 	}
 
@@ -97,10 +107,16 @@ func readURL(location *url.URL) ([]byte, error) {
 	if location.Scheme != "" && location.Host != "" {
 		resp, err := http.Get(location.String())
 		if err != nil {
+			panic(err)
+		}
+		if err != nil {
 			return nil, err
 		}
 		data, err := ioutil.ReadAll(resp.Body)
 		defer resp.Body.Close()
+		if err != nil {
+			panic(err)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -110,6 +126,9 @@ func readURL(location *url.URL) ([]byte, error) {
 		return nil, fmt.Errorf("Unsupported URI: '%s'", location.String())
 	}
 	data, err := ioutil.ReadFile(location.Path)
+	if err != nil {
+		panic(err)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -125,9 +144,16 @@ func (swaggerLoader *SwaggerLoader) loadSwaggerFromFileInternal(path string) (*S
 	f := swaggerLoader.LoadSwaggerFromURIFunc
 	pathAsURL := &url.URL{Path: path}
 	if f != nil {
-		return f(swaggerLoader, pathAsURL)
+		x, err := f(swaggerLoader, pathAsURL)
+		if err != nil {
+			panic(err)
+		}
+		return x, err
 	}
 	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +168,9 @@ func (swaggerLoader *SwaggerLoader) LoadSwaggerFromData(data []byte) (*Swagger, 
 func (swaggerLoader *SwaggerLoader) loadSwaggerFromDataInternal(data []byte) (*Swagger, error) {
 	swagger := &Swagger{}
 	if err := yaml.Unmarshal(data, swagger); err != nil {
+		if err != nil {
+			panic(err)
+		}
 		return nil, err
 	}
 	return swagger, swaggerLoader.ResolveRefsIn(swagger, nil)
@@ -157,6 +186,9 @@ func (swaggerLoader *SwaggerLoader) LoadSwaggerFromDataWithPath(data []byte, pat
 func (swaggerLoader *SwaggerLoader) loadSwaggerFromDataWithPathInternal(data []byte, path *url.URL) (*Swagger, error) {
 	swagger := &Swagger{}
 	if err := yaml.Unmarshal(data, swagger); err != nil {
+		if err != nil {
+			panic(err)
+		}
 		return nil, err
 	}
 	return swagger, swaggerLoader.ResolveRefsIn(swagger, path)
