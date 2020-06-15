@@ -264,7 +264,7 @@ func join(basePath *url.URL, relativePath *url.URL) (*url.URL, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot copy path: %q", basePath.String())
 	}
-	newPath.Path = path.Join(path.Dir(newPath.Path), relativePath.Path)
+	newPath.Path = path.Dir(newPath.Path) + "/" + relativePath.Path
 	return newPath, nil
 }
 
