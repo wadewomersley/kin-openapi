@@ -18,15 +18,15 @@ import (
 )
 
 func foundUnresolvedRef(ref string) error {
-	return fmt.Errorf("Found unresolved ref: '%s'", ref)
+	return fmt.Errorf("found unresolved ref: %q", ref)
 }
 
 func failedToResolveRefFragment(value string) error {
-	return fmt.Errorf("Failed to resolve fragment in URI: '%s'", value)
+	return fmt.Errorf("failed to resolve fragment in URI: %q", value)
 }
 
 func failedToResolveRefFragmentPart(value string, what string) error {
-	return fmt.Errorf("Failed to resolve '%s' in fragment in URI: '%s'", what, value)
+	return fmt.Errorf("failed to resolve %q in fragment in URI: %q", what, value)
 }
 
 type SwaggerLoader struct {
@@ -70,7 +70,7 @@ func (swaggerLoader *SwaggerLoader) loadSwaggerFromURIInternal(location *url.URL
 // passed element.
 func (swaggerLoader *SwaggerLoader) loadSingleElementFromURI(ref string, rootPath *url.URL, element json.Unmarshaler) error {
 	if !swaggerLoader.IsExternalRefsAllowed {
-		return fmt.Errorf("encountered non-allowed external reference: '%s'", ref)
+		return fmt.Errorf("encountered non-allowed external reference: %q", ref)
 	}
 
 	parsedURL, err := url.Parse(ref)
@@ -262,7 +262,7 @@ func join(basePath *url.URL, relativePath *url.URL) (*url.URL, error) {
 	}
 	newPath, err := copyURL(basePath)
 	if err != nil {
-		return nil, fmt.Errorf("Can't copy path: '%s'", basePath.String())
+		return nil, fmt.Errorf("cannot copy path: %q", basePath.String())
 	}
 	newPath.Path = path.Join(path.Dir(newPath.Path), relativePath.Path)
 	return newPath, nil
@@ -290,11 +290,11 @@ func (swaggerLoader *SwaggerLoader) resolveComponent(swagger *Swagger, ref strin
 
 	parsedURL, err := url.Parse(ref)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Can't parse reference: '%s': %v", ref, parsedURL)
+		return nil, nil, fmt.Errorf("cannot parse reference: %q: %v", ref, parsedURL)
 	}
 	fragment := parsedURL.Fragment
 	if !strings.HasPrefix(fragment, "/") {
-		err := fmt.Errorf("expected fragment prefix '#/' in URI '%s'", ref)
+		err := fmt.Errorf("expected fragment prefix '#/' in URI %q", ref)
 		return nil, nil, err
 	}
 
@@ -305,7 +305,7 @@ func (swaggerLoader *SwaggerLoader) resolveComponent(swagger *Swagger, ref strin
 		pathPart = strings.Replace(pathPart, "~0", "~", -1)
 
 		if cursor, err = drillIntoSwaggerField(cursor, pathPart); err != nil {
-			return nil, nil, fmt.Errorf("Failed to resolve '%s' in fragment in URI: '%s': %v", ref, pathPart, err.Error())
+			return nil, nil, fmt.Errorf("failed to resolve %q in fragment in URI: %q: %v", ref, pathPart, err.Error())
 		}
 		if cursor == nil {
 			return nil, nil, failedToResolveRefFragmentPart(ref, pathPart)
@@ -320,7 +320,7 @@ func drillIntoSwaggerField(cursor interface{}, fieldName string) (interface{}, e
 	case reflect.Map:
 		elementValue := val.MapIndex(reflect.ValueOf(fieldName))
 		if !elementValue.IsValid() {
-			return nil, fmt.Errorf("Map key not found: %v", fieldName)
+			return nil, fmt.Errorf("map key %q not found", fieldName)
 		}
 		return elementValue.Interface(), nil
 
@@ -350,7 +350,7 @@ func drillIntoSwaggerField(cursor interface{}, fieldName string) (interface{}, e
 			return drillIntoSwaggerField(val.FieldByName("Value").Interface(), fieldName) // recurse into .Value
 		}
 		// give up
-		return nil, fmt.Errorf("Struct field not found: %v", fieldName)
+		return nil, fmt.Errorf("struct field %q not found", fieldName)
 
 	default:
 		return nil, errors.New("not a map, slice nor struct")
@@ -361,24 +361,24 @@ func (swaggerLoader *SwaggerLoader) resolveRefSwagger(swagger *Swagger, ref stri
 	componentPath := path
 	if !strings.HasPrefix(ref, "#") {
 		if !swaggerLoader.IsExternalRefsAllowed {
-			return nil, "", nil, fmt.Errorf("Encountered non-allowed external reference: '%s'", ref)
+			return nil, "", nil, fmt.Errorf("encountered non-allowed external reference: %q", ref)
 		}
 		parsedURL, err := url.Parse(ref)
 		if err != nil {
-			return nil, "", nil, fmt.Errorf("Can't parse reference: '%s': %v", ref, parsedURL)
+			return nil, "", nil, fmt.Errorf("cannot parse reference: %q: %v", ref, parsedURL)
 		}
 		fragment := parsedURL.Fragment
 		parsedURL.Fragment = ""
 
 		resolvedPath, err := resolvePath(path, parsedURL)
 		if err != nil {
-			return nil, "", nil, fmt.Errorf("Error while resolving path: %v", err)
+			return nil, "", nil, fmt.Errorf("error resolving path: %v", err)
 		}
 
 		if swagger, err = swaggerLoader.loadSwaggerFromURIInternal(resolvedPath); err != nil {
-			return nil, "", nil, fmt.Errorf("Error while resolving reference '%s': %v", ref, err)
+			return nil, "", nil, fmt.Errorf("error resolving reference %q: %v", ref, err)
 		}
-		ref = fmt.Sprintf("#%s", fragment)
+		ref = "#" + fragment
 		componentPath = resolvedPath
 	}
 	return swagger, ref, componentPath, nil
@@ -475,7 +475,7 @@ func (swaggerLoader *SwaggerLoader) resolveParameterRef(swagger *Swagger, compon
 	}
 
 	if value.Content != nil && value.Schema != nil {
-		return errors.New("Cannot contain both schema and content in a parameter")
+		return errors.New("cannot contain both schema and content in a parameter")
 	}
 	for _, contentType := range value.Content {
 		if schema := contentType.Schema; schema != nil {
@@ -848,7 +848,7 @@ func (swaggerLoader *SwaggerLoader) resolvePathItemRef(swagger *Swagger, entrypo
 			}
 
 			if !strings.HasPrefix(ref, prefix) {
-				err = fmt.Errorf("expected prefix '%s' in URI '%s'", prefix, ref)
+				err = fmt.Errorf("expected prefix %q in URI %q", prefix, ref)
 				return
 			}
 			id := unescapeRefString(ref[len(prefix):])
