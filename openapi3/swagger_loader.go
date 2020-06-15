@@ -128,7 +128,7 @@ func readURL(location *url.URL) ([]byte, error) {
 	}
 	data, err := ioutil.ReadFile(filepath.FromSlash(location.Path))
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("location.Path:%q filepath.FromSlash(location.Path):%q err:%v", location.Path, filepath.FromSlash(location.Path), err))
 	}
 	if err != nil {
 		return nil, err
