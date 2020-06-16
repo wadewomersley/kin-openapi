@@ -817,10 +817,6 @@ func (swaggerLoader *SwaggerLoader) resolvePathItemRef(swagger *Swagger, entrypo
 				return
 			}
 
-			if !strings.HasPrefix(ref, prefix) {
-				err = fmt.Errorf("expected prefix '%s' in URI '%s'", prefix, ref)
-				return
-			}
 			id := unescapeRefString(ref[len(prefix):])
 
 			definitions := swagger.Paths
