@@ -228,10 +228,6 @@ func (swaggerLoader *SwaggerLoader) resolveComponent(swagger *Swagger, ref strin
 		ref = fmt.Sprintf("#%s", fragment)
 		componentPath = resolvedPath
 	}
-	if !strings.HasPrefix(ref, prefix) {
-		err := fmt.Errorf("expected prefix '%s' in URI '%s'", prefix, ref)
-		return nil, "", nil, err
-	}
 	id = ref[len(prefix):]
 	if strings.IndexByte(id, '/') >= 0 {
 		return nil, "", nil, failedToResolveRefFragmentPart(ref, id)
