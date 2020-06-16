@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/wadewomersley/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 )
 
